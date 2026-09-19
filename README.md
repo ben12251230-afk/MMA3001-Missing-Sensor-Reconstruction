@@ -1,2 +1,2 @@
-# MMA3001-Occupancy-Prediction
-Predicting indoor room occupancy using CO₂ concentration, temperature, and other environmental sensor data.
+# MMA3001-Missing-Sensor-Reconstruction
+Reconstructing missing sensor measurements using numerical interpolation.
