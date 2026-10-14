@@ -153,6 +153,17 @@ After endpoint correction, combined regression improved markedly. For **120-minu
 
 Additional exploratory figures, including `reconstruction_example.png` and `rmse_vs_missing_duration.png`, are available in `results/figures/`.
 
+### Reconstruction Example: 120-Minute Missing Window
+
+The figure below compares seven reconstruction methods for a
+120-minute missing temperature window.
+
+The endpoint-constrained regression corrects the original
+regression predictions to match the known temperature values
+at both boundaries of the missing window.
+
+![Seven-method reconstruction example](results/figures/seven_method_reconstruction_120min.png)
+
 ## Reproducibility and Repository Structure
 
 ```text
