@@ -1,262 +1,259 @@
-# MMA3001 Missing Indoor Temperature Sensor Reconstruction
+# MMA3001 — Reconstruction of Missing Indoor Temperature Sensor Measurements
 
 ## Project Overview
 
-Indoor environmental monitoring systems rely on continuous sensor measurements to support building operation, environmental assessment, and data analysis. However, sensor measurements may be temporarily unavailable because of communication failures, sensor faults, or data transmission issues.
+Indoor environmental monitoring systems depend on temperature measurements for building analysis and operational decisions. Missing measurements caused by sensor faults or transmission interruptions can reduce the usefulness of these records. This project investigates the reconstruction of artificially missing indoor temperature measurements using numerical interpolation and environmental regression models.
 
-This project investigates how accurately missing indoor temperature measurements can be reconstructed using numerical interpolation and a simple machine learning approach.
+**Research question**
 
-The main research question is:
+> How accurately can numerical and data-driven methods reconstruct missing indoor temperature sensor measurements, and how does reconstruction accuracy change with missing-data duration?
 
-> **How accurately can different numerical and data-driven methods reconstruct missing indoor temperature sensor measurements for different missing-data durations?**
+The study follows an iterative three-stage workflow:
 
-Three reconstruction methods are compared:
+1. **Initial six-method comparison:** evaluate six methods on 60 common windows (360 method-window evaluations) to establish the performance of interpolation and environmental regression against a simple persistence baseline.
+2. **Method improvement:** address discontinuities in the combined regression estimates by imposing known temperature values at both ends of each missing window.
+3. **Final seven-method validation:** evaluate the additional endpoint-constrained regression using the same missing windows and error metrics.
 
-- Linear interpolation
-- Cubic spline interpolation
-- Multiple linear regression using humidity and pressure
-
----
+The original six-method results are retained to document the development and motivation of the improved method.
 
 ## Dataset
 
-The environmental sensor dataset contains measurements from multiple indoor sensors.
+The supplied environmental sensor dataset contains observations from multiple indoor sensors. This project focuses on sensor **`6012002000869`** and uses temperature as the reconstruction target. Humidity and pressure are used as additional predictors for the regression models.
 
-The analysis focuses on sensor:
+The selected source data contained approximately **29,341 records** before duplicate-timestamp processing. After cleaning and deduplication, **13,800 unique timestamped measurements** remained.
 
-`6012002000869`
+The nominal measurement interval is approximately **10 minutes**, although some intervals are around 20 minutes. The validation therefore uses actual timestamps rather than assuming that all samples are uniformly spaced.
 
-The original temperature data contained approximately 29,341 records. After duplicate timestamps were checked and removed, 13,800 unique measurements remained.
+Other environmental variables in the source dataset include carbon dioxide, formaldehyde, volatile organic compounds, and particulate matter; these are not used as regression features in the final comparison.
 
-The main sampling interval is approximately 10 minutes.
+**Raw data availability:** The large raw sensor CSV is excluded from Git tracking. To reproduce the analysis, obtain the supplied dataset and place it at the raw-data path referenced in the notebook (under `Data/raw/`).
 
-The dataset contains environmental variables including:
-
-- Temperature
-- Humidity
-- Pressure
-- Carbon dioxide
-- Formaldehyde
-- Volatile organic compounds
-- Particulate matter
-
-Temperature is used as the reconstruction target, while humidity and pressure are additionally investigated as predictor variables for the regression model.
-
-The raw dataset is not included in the repository because of its file size.
-
----
-
-## Data Processing
+## Data Preparation and Experimental Design
 
 The main preprocessing steps are:
 
-1. Extract environmental variables from the JSON sensor data.
-2. Convert Unix timestamps to datetime values.
-3. Convert environmental measurements to numeric values.
-4. Check for missing values.
-5. Check for conflicting duplicate timestamps.
-6. Remove duplicate measurements.
-7. Calculate time differences between consecutive measurements.
-8. Identify continuous temperature measurement blocks.
+1. Extract temperature, humidity, and pressure from the sensor records.
+2. Convert Unix timestamps to datetimes and measurements to numeric values.
+3. Check missing values and conflicting duplicate timestamps.
+4. Retain one valid observation per timestamp and sort chronologically.
+5. Inspect sampling intervals and identify the selected sensor's measurements.
 
-A measurement interval is considered continuous when it is approximately 10 minutes, with a tolerance of ±5 seconds.
+For regression modelling, the cleaned dataset is split **chronologically** into 80% training data (**11,040 observations**) and 20% held-out test data (**2,760 observations**). Regression models are fitted on the training portion, while the reconstruction experiments use the test portion.
 
-The three longest continuous blocks used for the final validation are:
+### Artificial missing-temperature windows
 
-| Block | Measurements | Duration |
-|---|---:|---:|
-| 157 | 66 | 10 h 50 min |
-| 196 | 65 | 10 h 40 min |
-| 193 | 55 | approximately 9 h |
+Observed temperatures are temporarily withheld so they can be used as **ground truth** when evaluating reconstruction accuracy. The missing interval is based on elapsed time, not a fixed number of rows.
 
----
+| Nominal missing duration | Test windows |
+|---|---:|
+| 10 minutes | 15 |
+| 30 minutes | 15 |
+| 60 minutes | 15 |
+| 120 minutes | 15 |
+| **Total** | **60** |
+
+Each experiment uses the same hidden positions across all compared methods. For interpolation, up to four known temperature observations immediately before and four immediately after the gap provide local support points. The actual number of withheld readings can differ between windows because the original measurement intervals are not perfectly regular.
+
+The final comparison contains **60 windows × 7 methods = 420 method-window evaluations**. These are 420 evaluations, not 420 independent missing windows.
 
 ## Reconstruction Methods
 
-### Linear Interpolation
+### Stage 1 — Initial Six-Method Evaluation
 
-Linear interpolation reconstructs missing measurements using a straight line between the surrounding known measurements.
+1. **Persistence baseline:** Repeat the last known temperature before the missing interval. This provides a simple benchmark, not ground truth.
+2. **Linear interpolation:** Reconstruct temperatures from known observations surrounding the gap using elapsed time.
+3. **Cubic spline interpolation:** Fit a natural cubic spline using local temperature observations before and after the gap.
+4. **Humidity regression:** Predict temperature from humidity alone.
+5. **Pressure regression:** Predict temperature from pressure alone.
+6. **Combined regression:** Predict temperature from humidity and pressure together.
 
-This method is simple, computationally inexpensive, and suitable when temperature varies gradually over a short period.
+The combined multiple linear regression model has the form
 
-### Cubic Spline Interpolation
+$$
+\hat{T}_{\mathrm{reg}}(t)=\beta_0+\beta_1H(t)+\beta_2P(t).
+$$
 
-Cubic spline interpolation fits smooth cubic polynomial segments through the available measurements.
+Unlike interpolation, the original regression predictions are not forced to meet the observed temperatures at the boundaries of the missing period. This can produce visible discontinuities.
 
-It provides smoother reconstruction than linear interpolation but is more computationally complex and may behave differently depending on the local shape of the temperature data.
+### Stage 2 — Endpoint-Constrained Combined Regression
 
-### Multiple Linear Regression
+To address the discontinuities, the project introduces a **seventh method** that retains the fitted combined regression model but corrects its output to pass through the two known boundary temperatures.
 
-Multiple linear regression was investigated as an additional data-driven reconstruction method.
+Let \(t_0,t_1\) be the timestamps of the known observations immediately before and after the gap, with actual temperatures \(T_0,T_1\). Define
 
-Humidity and pressure were used as predictor variables:
+$$
+\alpha(t)=\frac{t-t_0}{t_1-t_0}.
+$$
 
-\[
-Temperature = \beta_0 + \beta_1 Humidity + \beta_2 Pressure
-\]
+The constrained reconstruction is
 
-The observed correlations with temperature were relatively weak:
+$$
+\hat T_{\mathrm{constrained}}(t)=\hat T_{\mathrm{reg}}(t)
++(1-\alpha)(T_0-\hat T_{\mathrm{reg}}(t_0))
++\alpha(T_1-\hat T_{\mathrm{reg}}(t_1)).
+$$
 
-- Temperature vs Humidity: approximately -0.123
-- Temperature vs Pressure: approximately -0.104
+This correction enforces the **two endpoint values** while allowing the regression prediction to contribute variation within the gap. It **does not reduce the number of fitted regression coefficients**: it adds boundary constraints to the reconstruction. Neither endpoint is taken from the artificially withheld temperatures.
 
-This indicates that humidity and pressure alone contain limited information for predicting temperature in this dataset.
+### Stage 3 — Final Seven-Method Evaluation
 
----
+The endpoint-constrained approach is tested against all six original methods on **the same 60 missing windows**, allowing a consistent comparison before and after the modification.
 
-## Validation Method
+## Evaluation Metrics
 
-Artificial missing-data gaps were created inside continuous temperature segments.
+All methods are evaluated against the original, withheld sensor temperatures using:
 
-The original temperature values were retained as ground truth before the selected measurements were removed.
+- **Mean absolute error (MAE)**, in °C.
+- **Root mean square error (RMSE)**, in °C.
+- **Normalised RMSE (NRMSE)**, as a percentage of the held-out test temperature range.
 
-Four missing-data durations were investigated:
+$$
+\mathrm{MAE}=\frac{1}{n}\sum_{i=1}^{n}|T_i-\hat T_i|,
+\qquad
+\mathrm{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^{n}(T_i-\hat T_i)^2}.
+$$
 
-| Missing measurements | Approximate duration |
-|---:|---:|
-| 1 | 10 minutes |
-| 3 | 30 minutes |
-| 6 | 60 minutes |
-| 12 | 120 minutes |
+$$
+\mathrm{NRMSE}(\%)=\frac{\mathrm{RMSE}}{T_{\max,\mathrm{test}}-T_{\min,\mathrm{test}}}\times 100.
+$$
 
-For each missing duration:
-
-- 3 continuous temperature blocks were tested.
-- 5 positions were tested within each block.
-- This produced 15 tests per missing duration.
-- A total of 60 reconstruction experiments were performed.
-
-Reconstruction accuracy was evaluated using:
-
-**Mean Absolute Error (MAE)**
-
-\[
-MAE = \frac{1}{n}\sum |y_i-\hat{y}_i|
-\]
-
-**Root Mean Square Error (RMSE)**
-
-\[
-RMSE = \sqrt{\frac{1}{n}\sum(y_i-\hat{y}_i)^2}
-\]
-
----
+For this experiment, the held-out test temperatures range from **19.5°C to 25.5°C**; consequently, every method uses the same **6.0°C denominator**. A lower error is better. NRMSE should not be interpreted as a conventional prediction-accuracy percentage.
 
 ## Results
 
-The mean RMSE values across the three continuous temperature segments were:
+### Mean NRMSE by missing duration
 
-| Approximate Missing Duration | Linear RMSE (°C) | Cubic Spline RMSE (°C) | Regression RMSE (°C) |
-|---:|---:|---:|---:|
-| 10 min | 0.0767 | 0.0786 | 1.0248 |
-| 30 min | 0.0847 | 0.1195 | 0.9859 |
-| 60 min | 0.1566 | 0.2186 | 0.9661 |
-| 120 min | 0.2772 | 0.2532 | 0.9160 |
+The table reports the average *window-level NRMSE* for each method and duration, in percent.
 
-The results show that reconstruction error generally increases as the duration of the missing temperature measurements becomes longer.
+| Method | 10 min | 30 min | 60 min | 120 min |
+|---|---:|---:|---:|---:|
+| Persistence | 1.2222 | 2.8907 | 5.7316 | 8.8016 |
+| Linear interpolation | 1.2216 | **1.4075** | **1.8261** | 3.1792 |
+| Cubic spline interpolation | 1.3119 | 1.5979 | 2.1272 | 3.6176 |
+| Humidity regression | 11.7334 | 11.7125 | 11.3655 | 12.8124 |
+| Pressure regression | 11.9157 | 12.4124 | 12.3442 | 13.9177 |
+| Combined regression | 15.4526 | 15.6619 | 15.0829 | 15.8383 |
+| **Endpoint-constrained regression** | **1.2039** | 1.4825 | 1.8920 | **3.1035** |
 
-Linear interpolation produced slightly lower mean RMSE for the 10, 30 and 60 minute gaps.
+The six-method comparison showed that time-based interpolation substantially outperformed regression based only on humidity and pressure. Persistence also became less accurate as the missing duration increased, demonstrating the value of reconstructing a changing signal rather than simply carrying forward the last reading.
 
-Cubic spline interpolation produced a slightly lower mean RMSE for the longest 120 minute gap.
+After endpoint correction, combined regression improved markedly. For **120-minute gaps**, mean NRMSE decreased from **15.8383%** (original combined regression) to **3.1035%** (endpoint-constrained regression). This was close to **3.1792%** for linear interpolation. Linear interpolation remained slightly better for the **30- and 60-minute** gaps, while the constrained approach was slightly better at **10 and 120 minutes** in this dataset.
 
-The multiple linear regression model produced substantially larger reconstruction errors than both interpolation methods for all tested gap durations.
+**Interpretation:** The large improvement cannot be attributed solely to humidity and pressure because the constrained method additionally uses the known temperature values at both endpoints. The small differences between constrained regression and linear interpolation should not be overstated. Visual continuity at the endpoints also does not guarantee better predictions inside the gap; this is why all methods are evaluated against the hidden ground truth.
 
-This is consistent with the weak relationships observed between temperature, humidity and pressure.
+## Figures
 
-Therefore, time-based interpolation is more suitable for this dataset than the tested regression model.
+### Initial six-method comparison
 
-For short and medium gaps, linear interpolation provides a particularly good balance between reconstruction accuracy, simplicity and computational cost.
+![Initial six-method NRMSE comparison](results/figures/six_method_comparison.png)
 
----
+### Final seven-method comparison
 
-## Main Result Figures
+![Final seven-method NRMSE comparison](results/figures/seven_method_comparison.png)
 
-### Interpolation Performance
+Additional exploratory figures, including `reconstruction_example.png` and `rmse_vs_missing_duration.png`, are available in `results/figures/`.
 
-![Interpolation reconstruction error](results/figures/rmse_vs_missing_duration.png)
-
-### Comparison of Three Reconstruction Methods
-
-![Three-method comparison](results/figures/three_method_rmse_comparison.png)
-
----
-
-## Repository Structure
+## Reproducibility and Repository Structure
 
 ```text
 MMA3001-Occupancy-Prediction/
-│
 ├── Data/
-│   ├── raw/
+│   ├── raw/                         # Raw dataset (excluded from Git)
 │   └── processed/
-│
 ├── notebooks/
 │   └── 01_data_exploration.ipynb
-│
 ├── src/
 │   ├── __init__.py
 │   ├── data_processing.py
 │   ├── interpolation.py
 │   ├── evaluation.py
-│   └── ml_model.py
-│
+│   ├── ml_model.py
+│   └── validation.py
 ├── tests/
 │   ├── test_interpolation.py
-│   └── test_evaluation.py
-│
+│   ├── test_evaluation.py
+│   └── test_validation.py
 ├── results/
 │   ├── figures/
+│   │   ├── six_method_comparison.png
+│   │   └── seven_method_comparison.png
 │   └── tables/
-│
-├── doc/
-│   └── index.html
-│
+│       ├── missing_windows.csv
+│       ├── regression_model_comparison.csv
+│       ├── six_method_validation_results.csv
+│       ├── six_method_validation_summary.csv
+│       ├── seven_method_validation_results.csv
+│       └── seven_method_validation_summary.csv
+├── doc/                              # Generated pdoc HTML documentation
 ├── requirements.txt
 ├── .gitignore
 ├── LICENSE
 └── README.md
+```
 
-Installation
-Python 3.12 was used for the project.
-Install the required Python packages with:
+The tree lists the main project deliverables; additional exploratory plots and tables may also be present.
+
+### Installation
+
+Python **3.12** was used for development. From the repository root:
+
+```bash
 python -m pip install -r requirements.txt
+```
 
-Running the Analysis
-Open the main Jupyter notebook:
+### Running the analysis
+
+Open and run the notebook from the project root:
+
+```bash
 jupyter notebook notebooks/01_data_exploration.ipynb
+```
 
-The notebook contains the complete data exploration, preprocessing, reconstruction experiments, validation, machine learning comparison, and result generation workflow.
-Testing
-Automated tests are included for the main interpolation and evaluation functions.
-Run the tests from the project root directory using:
+The notebook performs data exploration, preprocessing, regression training, construction of artificial missing windows, reconstruction, evaluation, visualisation, and result export. The supplied raw dataset must be available at the path expected by the notebook.
+
+### Automated testing
+
+```bash
 python -m pytest -v
+```
 
-The current test suite contains five tests covering:
-- Artificial missing-gap creation
-- Linear interpolation
-- Cubic spline interpolation
-- MAE calculation
-- RMSE calculation
-All five tests pass successfully.
-API Documentation
-HTML documentation for the Python source modules was generated using pdoc.
-To regenerate the documentation:
+The current test suite contains **8 passing tests**, covering missing-gap generation, numerical interpolation, error calculations, the reconstruction validation workflow, and the endpoint constraint property.
+
+### API documentation
+
+Source-code documentation is generated with **pdoc**:
+
+```bash
 python -m pdoc src -o doc
+```
 
-On macOS, the generated documentation can be opened with:
+On macOS, open the generated documentation with:
+
+```bash
 open doc/index.html
+```
 
-Limitations
-The reconstruction results are based on one selected indoor sensor and a limited number of long continuous temperature segments.
-The performance of the methods may differ for other sensors, buildings, seasons, environmental conditions, or longer periods of missing data.
-The regression model only uses humidity and pressure as predictors. Other environmental variables or more advanced machine learning methods could potentially improve data-driven reconstruction.
-The results therefore demonstrate performance for this dataset rather than a universal reconstruction accuracy for all indoor sensor systems.
-Future Work
-Future work could investigate additional sensors, more continuous measurement periods, additional environmental predictor variables, and more advanced machine learning models.
-Machine learning approaches could also incorporate time-related features or neighbouring temperature measurements to determine whether they can improve reconstruction performance compared with numerical interpolation.
-AI Use
-AI tools were used during the project to support coding, debugging, documentation, and interpretation of computational results.
-All code was executed and tested by the author. Generated suggestions were checked against the dataset, numerical results, automated tests, and project requirements before being included in the final workflow.
-A more detailed discussion of AI use, verification, limitations, and learning outcomes is provided in the project documentation.
+The `src.validation` module documents `create_missing_windows`, `endpoint_constrained_combined_regression`, and `validate_reconstruction`.
 
+## Limitations and Future Work
 
+- **Scope:** Results are based on one selected sensor and one held-out time period. Performance may differ across buildings, sensors, operating conditions, or seasons.
+- **Gap length:** The study covers 10–120 minutes. These findings should not be extrapolated to a full-day outage without further validation.
+- **Sampling:** Some original timestamps are approximately 20 minutes apart, so the number of hidden observations varies even when elapsed-time gap durations match.
+- **Endpoint access:** Linear interpolation, cubic spline interpolation and endpoint-constrained regression require temperature measurements *after* the missing interval. They are therefore intended primarily for **retrospective data reconstruction**, not real-time prediction during an ongoing outage.
+- **Predictors:** The regression models use only humidity and/or pressure. Other variables, lagged temperature data, time-of-day effects or richer models may provide additional information, but must be evaluated on held-out data.
+- **Model comparison:** The relatively small differences between linear and endpoint-constrained methods warrant further evaluation using additional periods, sensors and temperature-change conditions before claiming one consistently outperforms the other.
+
+Future work could investigate longer missing windows, abrupt environmental changes, daily-cycle-based reconstruction, uncertainty estimates, and validation across independent sensors.
+
+## AI Use and Verification
+
+AI tools, primarily ChatGPT, were used throughout this project to support programming, numerical analysis, debugging and documentation.
+
+- **Data Processing:** AI assisted with cleaning sensor data, handling duplicate timestamps and identifying suitable measurements for analysis.
+- **Method Implementation:** AI supported the implementation of interpolation methods, regression models and evaluation metrics (MAE, RMSE and NRMSE).
+- **Method Improvement:** After identifying poor regression performance and discontinuities at missing-window boundaries, I used AI to help develop an endpoint-constrained regression method.
+- **Validation and Testing:** AI assisted with comparing six initial methods, extending the evaluation to seven methods, debugging code and developing automated tests.
+- **Critical Reflection:** I reviewed AI-generated suggestions, verified results against the dataset and made independent decisions about the project's direction and improvements.
+
+Overall Reflection: AI was most useful for accelerating programming, exploring alternative methods and explaining numerical concepts. However, the most important improvements came from critically evaluating the results, identifying limitations and making informed engineering decisions. This project demonstrated that AI can support computational problem-solving, but its outputs must be independently verified rather than treated as automatically correct.

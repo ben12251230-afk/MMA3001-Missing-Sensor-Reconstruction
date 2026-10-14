@@ -1,0 +1,29 @@
+duration_min,method,n_tests,MAE_mean,RMSE_mean,NRMSE_mean
+10,Combined regression,15,0.9272,0.9272,15.4526
+10,Cubic spline,15,0.0787,0.0787,1.3119
+10,Endpoint-constrained regression,15,0.0722,0.0722,1.2039
+10,Humidity regression,15,0.704,0.704,11.7334
+10,Linear,15,0.0733,0.0733,1.2216
+10,Persistence,15,0.0733,0.0733,1.2222
+10,Pressure regression,15,0.7149,0.7149,11.9157
+30,Combined regression,15,0.9342,0.9397,15.6619
+30,Cubic spline,15,0.0857,0.0959,1.5979
+30,Endpoint-constrained regression,15,0.0823,0.0889,1.4825
+30,Humidity regression,15,0.6984,0.7027,11.7125
+30,Linear,15,0.0798,0.0845,1.4075
+30,Persistence,15,0.1467,0.1734,2.8907
+30,Pressure regression,15,0.7338,0.7447,12.4124
+60,Combined regression,15,0.8732,0.905,15.0829
+60,Cubic spline,15,0.1103,0.1276,2.1272
+60,Endpoint-constrained regression,15,0.0988,0.1135,1.892
+60,Humidity regression,15,0.6561,0.6819,11.3655
+60,Linear,15,0.0963,0.1096,1.8261
+60,Persistence,15,0.296,0.3439,5.7316
+60,Pressure regression,15,0.7153,0.7406,12.3442
+120,Combined regression,15,0.908,0.9503,15.8383
+120,Cubic spline,15,0.1844,0.2171,3.6176
+120,Endpoint-constrained regression,15,0.1612,0.1862,3.1035
+120,Humidity regression,15,0.7325,0.7687,12.8124
+120,Linear,15,0.1653,0.1908,3.1792
+120,Persistence,15,0.4661,0.5281,8.8016
+120,Pressure regression,15,0.8015,0.8351,13.9177
