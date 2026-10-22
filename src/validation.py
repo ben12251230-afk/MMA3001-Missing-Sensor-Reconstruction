@@ -26,7 +26,25 @@ def create_missing_windows(
         Test windows containing duration, test number,
         start time, end time and number of hidden readings.
     """
+    # Validate input parameters
+    if "time" not in validation_data.columns:
+        raise ValueError("Input data must contain a 'time' column.")
 
+    if not pd.api.types.is_datetime64_any_dtype(validation_data["time"]):
+        raise TypeError("The 'time' column must contain datetime values.")
+
+    if validation_data["time"].isna().any():
+        raise ValueError("The 'time' column contains missing values.")
+
+    if not isinstance(n_tests, (int, np.integer)) or n_tests <= 0:
+        raise ValueError("n_tests must be a positive integer.")
+
+    if not gap_durations or any(
+    not isinstance(d, (int, np.integer)) or d <= 0
+    for d in gap_durations
+):
+        raise ValueError("gap_durations must contain positive integers.")
+    
     data = (
         validation_data
         .sort_values("time")

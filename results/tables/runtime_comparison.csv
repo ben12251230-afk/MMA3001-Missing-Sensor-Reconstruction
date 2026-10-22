@@ -1,0 +1,5 @@
+Method,Median runtime (ms / 60 windows),Runtime per window (ms)
+Linear interpolation,0.0659,0.0011
+Cubic spline,5.3577,0.0893
+Combined regression,18.7317,0.3122
+Endpoint-constrained regression,53.4988,0.8916
