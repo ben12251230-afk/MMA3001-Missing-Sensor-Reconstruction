@@ -110,7 +110,10 @@ def prepare_temperature_data(environmental_data, sensor_id):
     Parameters
     ----------
     environmental_data : pandas.DataFrame
-        Raw environmental sensor dataset.
+        Raw environmental sensor dataset containing
+        'sensorid' and 'jsondata' columns.
+        The 'jsondata' column contains JSON-formatted
+        environmental measurements.
 
     sensor_id : int
         ID of the sensor to analyse.

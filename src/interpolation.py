@@ -4,25 +4,36 @@ from scipy.interpolate import CubicSpline
 
 
 def create_missing_gap(data, gap_size, start_idx):
-    """
-    Create an artificial missing-data gap in a temperature time series.
+    """Create an artificial gap by hiding consecutive temperature measurements.
+
+    The original temperatures are retained in an 'actual' column as
+    ground truth, while the selected 'temperature' entries become NaN.
 
     Parameters
     ----------
     data : pandas.DataFrame
-        Dataframe containing 'time' and 'temperature'.
-
+        Input measurements containing 'time' and 'temperature'.
     gap_size : int
-        Number of consecutive measurements to remove.
-
+        Number of consecutive observations to hide (not elapsed minutes).
     start_idx : int
-        Index where the artificial gap begins.
+        Zero-based index of the first observation to hide.
 
     Returns
     -------
     pandas.DataFrame
-        Dataframe containing the original values in 'actual'
-        and missing values in 'temperature'.
+        Copy containing 'time', 'temperature', and 'actual' columns.
+
+    Raises
+    ------
+    ValueError
+        If gap_size is not positive or the requested gap lies outside
+        the available data range.
+
+    Notes
+    -----
+    This function was used in early exploratory experiments. The final
+    seven-method validation uses timestamp-based windows created by
+    'create_missing_windows' in the validation module.
     """
     experiment = (
         data[["time", "temperature"]]
@@ -51,19 +62,26 @@ def create_missing_gap(data, gap_size, start_idx):
 
 
 def linear_interpolation(data):
-    """
-    Reconstruct missing temperature values using linear interpolation.
+    """Reconstruct missing temperature values using time-based linear interpolation.
 
     Parameters
     ----------
     data : pandas.DataFrame
-        Dataframe containing 'time' and 'temperature'.
+        Measurements with a datetime 'time' column and a numerical
+        'temperature' column containing NaN at missing observations.
 
     Returns
     -------
     pandas.DataFrame
-        Copy of the dataframe with a 'linear' column containing
-        reconstructed temperature values.
+        Copy of the input with a 'linear' column containing interpolated
+        temperatures; the original 'temperature' column is unchanged.
+
+    Notes
+    -----
+    Pandas 'interpolate(method="time")' uses actual timestamp spacing.
+    Interior missing values are estimated between known observations;
+    missing values at the beginning may remain unfilled. The function
+    assumes valid datetime values and does not explicitly validate them.
     """
     result = data.copy()
 
@@ -79,19 +97,32 @@ def linear_interpolation(data):
 
 
 def cubic_spline_interpolation(data):
-    """
-    Reconstruct missing temperature values using cubic spline interpolation.
+    """Reconstruct missing temperature values using cubic spline interpolation.
 
     Parameters
     ----------
     data : pandas.DataFrame
-        Dataframe containing 'time' and 'temperature'.
+        Measurements with datetime 'time' and numerical 'temperature'
+        columns; missing temperatures are represented by NaN.
 
     Returns
     -------
     pandas.DataFrame
-        Copy of the dataframe with a 'cubic' column containing
-        reconstructed temperature values.
+        Copy of the input with a 'cubic' column containing spline
+        estimates at the missing timestamps.
+
+    Raises
+    ------
+    ValueError
+        If fewer than two known temperature measurements are available.
+
+    Notes
+    -----
+    This exploratory helper uses SciPy's CubicSpline with its default
+    'not-a-knot' boundary conditions. The final seven-method validation
+    separately uses natural boundary conditions on four known readings
+    before and four after each missing window. Cubic splines can
+    overshoot and produce unrealistic intermediate values.
     """
     result = data.copy()
 

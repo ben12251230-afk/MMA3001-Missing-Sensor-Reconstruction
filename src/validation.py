@@ -102,8 +102,66 @@ def endpoint_constrained_combined_regression(
     combined_model
 ):
     """
-    Reconstruct missing temperatures using combined regression
-    with constraints at both known temperature endpoints.
+    Reconstruct missing temperatures using endpoint-constrained regression.
+
+    This method adjusts predictions from a fitted humidity-pressure
+    regression model using known temperature measurements at both
+    boundaries of a missing window. A time-weighted correction ensures
+    that the reconstruction matches the observed endpoint temperatures.
+
+    Parameters
+    ----------
+    before : pd.DataFrame
+        Known measurements before the missing window.
+        Must contain 'time', 'temperature', 'humidity', and 'pressure'.
+        The last row defines the left boundary.
+
+    hidden : pd.DataFrame
+        Measurements within the missing window.
+        Must contain 'time', 'humidity', and 'pressure'.
+        The original temperature values are not used for prediction.
+
+    after : pd.DataFrame
+        Known measurements after the missing window.
+        Must contain 'time', 'temperature', 'humidity', and 'pressure'.
+        The first row defines the right boundary.
+
+    combined_model : sklearn.linear_model.LinearRegression
+        Fitted regression model using humidity and pressure
+        to predict temperature in degrees Celsius.
+
+    Returns
+    -------
+    np.ndarray
+        Reconstructed temperatures in degrees Celsius,
+        with one prediction for each row in hidden.
+
+    Raises
+    ------
+    IndexError
+        If before or after contains no measurements.
+
+    KeyError
+        If any required DataFrame column is missing.
+
+    Notes
+    -----
+    The input measurements are assumed to be chronologically ordered,
+    with missing timestamps between two distinct known endpoints.
+    The regression predictors must contain valid numerical values.
+
+    The endpoint correction does not modify the fitted regression
+    coefficients. It adjusts the predictions to satisfy the known
+    boundary temperatures.
+
+    This method requires measurements from both sides of the gap
+    and is intended for retrospective reconstruction.
+
+    Examples
+    --------
+    predictions = endpoint_constrained_combined_regression(
+        before, hidden, after, combined_model
+    )
     """
 
     # 1. Known temperature measurements at both boundaries
@@ -156,13 +214,98 @@ def validate_reconstruction(
     temperature_range
 ):
     """
-    Evaluate seven temperature reconstruction methods using
-    the same artificially missing temperature windows.
+    Evaluate seven methods for reconstructing missing temperature measurements.
+
+    Artificially missing temperature windows are reconstructed using
+    persistence, linear interpolation, cubic spline interpolation,
+    three regression models, and endpoint-constrained regression.
+
+    Each method is evaluated using the same validation windows.
+    Reconstructed temperatures are compared with the original
+    measurements to calculate MAE, RMSE, and NRMSE.
+
+    Parameters
+    ----------
+    validation_data : pd.DataFrame
+        Chronologically ordered sensor measurements containing
+        'time', 'temperature', 'humidity', and 'pressure'.
+        The time column must contain datetime values.
+
+    missing_windows : pd.DataFrame
+        Artificial missing-window information containing
+        'start_time', 'end_time', 'duration_min', and 'test_number'.
+
+    humidity_model : object
+        Fitted regression model that predicts temperature
+        using humidity measurements.
+
+    pressure_model : object
+        Fitted regression model that predicts temperature
+        using pressure measurements.
+
+    combined_model : object
+        Fitted regression model that predicts temperature
+        using both humidity and pressure measurements.
+
+    temperature_range : float
+        Temperature range in degrees Celsius used to
+        normalise RMSE. The testing range is 6.0 degrees
+        Celsius in this project.
 
     Returns
     -------
     pd.DataFrame
-        MAE, RMSE and NRMSE for each method and test window.
+        Reconstruction evaluation results containing:
+
+        - duration_min: Missing-window duration in minutes.
+        - test_number: Identification number of the test window.
+        - start_time: Starting timestamp of the missing window.
+        - n_hidden: Number of artificially hidden measurements.
+        - method: Name of the reconstruction method.
+        - MAE: Mean Absolute Error in degrees Celsius.
+        - RMSE: Root Mean Square Error in degrees Celsius.
+        - NRMSE (%): Normalised RMSE expressed as a percentage.
+
+    Raises
+    ------
+    KeyError
+        If required DataFrame columns are missing.
+
+    Notes
+    -----
+    Four known measurements before and four after each
+    missing window are used to support reconstruction.
+
+    Windows without sufficient surrounding measurements
+    are skipped automatically.
+
+    The original hidden temperature values are used only
+    as ground truth for evaluating reconstruction accuracy.
+
+    NRMSE is calculated as:
+
+        NRMSE (%) = RMSE / temperature_range * 100
+
+    If temperature_range is zero or negative, NRMSE is
+    returned as NaN.
+
+    The regression models must already be fitted before
+    calling this function.
+
+    The method is designed for retrospective reconstruction
+    because interpolation and endpoint-constrained regression
+    require measurements from both sides of the missing window.
+
+    Examples
+    --------
+    results = validate_reconstruction(
+        validation_data,
+        missing_windows,
+        humidity_model,
+        pressure_model,
+        combined_model,
+        temperature_range=6.0
+    )
     """
 
     results = []

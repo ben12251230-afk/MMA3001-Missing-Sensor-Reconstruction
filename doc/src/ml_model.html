@@ -59,68 +59,109 @@
 
                         <label class="view-source-button" for="mod-ml_model-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Machine learning models for environmental sensor reconstruction.&quot;&quot;&quot;</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="k">def</span> <span class="nf">train_linear_regression</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    Train a multiple linear regression model.</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    Parameters</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    ----------</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    data : pandas.DataFrame</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">        Input data containing predictor and target variables.</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    predictors : list of str</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">        Column names used as predictor variables.</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">    target : str</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        Column name of the variable to predict.</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    Returns</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">    -------</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">    sklearn.linear_model.LinearRegression</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">        Trained linear regression model.</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">clean_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>        <span class="n">subset</span><span class="o">=</span><span class="n">predictors</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="p">)</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="k">return</span> <span class="n">model</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="k">def</span> <span class="nf">predict_with_regression</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">):</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">    Predict values using a trained regression model.</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="sd">    Parameters</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="sd">    ----------</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="sd">    model : sklearn.linear_model.LinearRegression</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="sd">        Previously trained regression model.</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="sd">    data : pandas.DataFrame</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="sd">        Data containing predictor variables.</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">    predictors : list of str</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">        Predictor columns used by the model.</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a><span class="sd">    Returns</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a><span class="sd">    -------</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">    numpy.ndarray</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a><span class="sd">        Predicted values.</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">&quot;&quot;&quot;Machine learning models for environmental sensor reconstruction.&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="k">def</span> <span class="nf">train_linear_regression</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="sd">    Train a linear regression model using environmental sensor data.</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">    Parameters</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="sd">    ----------</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="sd">    data : pandas.DataFrame</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">        Training dataset containing predictor and target columns.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="sd">    predictors : list of str</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="sd">        Predictor column names, such as &#39;humidity&#39; and &#39;pressure&#39;.</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">    target : str</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="sd">        Target variable to predict, such as &#39;temperature&#39;.</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="sd">    Returns</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">    -------</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">    sklearn.linear_model.LinearRegression</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="sd">        Fitted linear regression model.</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">    Raises</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">    ------</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">    KeyError</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">        If required predictor or target columns are missing.</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">    ValueError</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">        If no valid training observations remain or the</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">        training data cannot be fitted.</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">    Notes</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a><span class="sd">    -----</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">    Rows containing missing predictor or target values are</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="sd">    removed before training.</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">    The function uses ordinary least squares regression.</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">    Training and testing data must be separated before</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">    calling this function to avoid data leakage.</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>    <span class="n">clean_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="n">subset</span><span class="o">=</span><span class="n">predictors</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>    <span class="p">)</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>    <span class="k">return</span> <span class="n">model</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="k">def</span> <span class="nf">predict_with_regression</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">):</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="sd">    Generate predictions using a fitted linear regression model.</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">    Parameters</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">    ----------</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">    model : sklearn.linear_model.LinearRegression</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">        Previously fitted regression model.</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">    data : pandas.DataFrame</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">        Input measurements containing the predictor columns.</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a><span class="sd">    predictors : list of str</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">        Predictor column names in the same order as those</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="sd">        used during model training.</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="sd">    Returns</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">    -------</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="sd">    numpy.ndarray</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Predicted values, with one prediction per input row.</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">    Raises</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">    ------</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">    KeyError</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="sd">        If required predictor columns are missing.</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="sd">    ValueError</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">        If predictor values are invalid or incompatible</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">        with the fitted regression model.</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">    sklearn.exceptions.NotFittedError</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">        If the regression model has not been fitted.</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">    Notes</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">    -----</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="sd">    The model must be trained before making predictions.</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="sd">    This function does not automatically remove missing</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">    predictor values. Valid numerical inputs are required.</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">    For this project, the regression models are used to</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">    predict temperature in degrees Celsius.</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -138,55 +179,91 @@
     <a class="headerlink" href="#train_linear_regression"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="train_linear_regression-8"><a href="#train_linear_regression-8"><span class="linenos"> 8</span></a><span class="k">def</span> <span class="nf">train_linear_regression</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 </span><span id="train_linear_regression-9"><a href="#train_linear_regression-9"><span class="linenos"> 9</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="train_linear_regression-10"><a href="#train_linear_regression-10"><span class="linenos">10</span></a><span class="sd">    Train a multiple linear regression model.</span>
+</span><span id="train_linear_regression-10"><a href="#train_linear_regression-10"><span class="linenos">10</span></a><span class="sd">    Train a linear regression model using environmental sensor data.</span>
 </span><span id="train_linear_regression-11"><a href="#train_linear_regression-11"><span class="linenos">11</span></a>
 </span><span id="train_linear_regression-12"><a href="#train_linear_regression-12"><span class="linenos">12</span></a><span class="sd">    Parameters</span>
 </span><span id="train_linear_regression-13"><a href="#train_linear_regression-13"><span class="linenos">13</span></a><span class="sd">    ----------</span>
 </span><span id="train_linear_regression-14"><a href="#train_linear_regression-14"><span class="linenos">14</span></a><span class="sd">    data : pandas.DataFrame</span>
-</span><span id="train_linear_regression-15"><a href="#train_linear_regression-15"><span class="linenos">15</span></a><span class="sd">        Input data containing predictor and target variables.</span>
+</span><span id="train_linear_regression-15"><a href="#train_linear_regression-15"><span class="linenos">15</span></a><span class="sd">        Training dataset containing predictor and target columns.</span>
 </span><span id="train_linear_regression-16"><a href="#train_linear_regression-16"><span class="linenos">16</span></a>
 </span><span id="train_linear_regression-17"><a href="#train_linear_regression-17"><span class="linenos">17</span></a><span class="sd">    predictors : list of str</span>
-</span><span id="train_linear_regression-18"><a href="#train_linear_regression-18"><span class="linenos">18</span></a><span class="sd">        Column names used as predictor variables.</span>
+</span><span id="train_linear_regression-18"><a href="#train_linear_regression-18"><span class="linenos">18</span></a><span class="sd">        Predictor column names, such as &#39;humidity&#39; and &#39;pressure&#39;.</span>
 </span><span id="train_linear_regression-19"><a href="#train_linear_regression-19"><span class="linenos">19</span></a>
 </span><span id="train_linear_regression-20"><a href="#train_linear_regression-20"><span class="linenos">20</span></a><span class="sd">    target : str</span>
-</span><span id="train_linear_regression-21"><a href="#train_linear_regression-21"><span class="linenos">21</span></a><span class="sd">        Column name of the variable to predict.</span>
+</span><span id="train_linear_regression-21"><a href="#train_linear_regression-21"><span class="linenos">21</span></a><span class="sd">        Target variable to predict, such as &#39;temperature&#39;.</span>
 </span><span id="train_linear_regression-22"><a href="#train_linear_regression-22"><span class="linenos">22</span></a>
 </span><span id="train_linear_regression-23"><a href="#train_linear_regression-23"><span class="linenos">23</span></a><span class="sd">    Returns</span>
 </span><span id="train_linear_regression-24"><a href="#train_linear_regression-24"><span class="linenos">24</span></a><span class="sd">    -------</span>
 </span><span id="train_linear_regression-25"><a href="#train_linear_regression-25"><span class="linenos">25</span></a><span class="sd">    sklearn.linear_model.LinearRegression</span>
-</span><span id="train_linear_regression-26"><a href="#train_linear_regression-26"><span class="linenos">26</span></a><span class="sd">        Trained linear regression model.</span>
-</span><span id="train_linear_regression-27"><a href="#train_linear_regression-27"><span class="linenos">27</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="train_linear_regression-28"><a href="#train_linear_regression-28"><span class="linenos">28</span></a>    <span class="n">clean_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
-</span><span id="train_linear_regression-29"><a href="#train_linear_regression-29"><span class="linenos">29</span></a>        <span class="n">subset</span><span class="o">=</span><span class="n">predictors</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
-</span><span id="train_linear_regression-30"><a href="#train_linear_regression-30"><span class="linenos">30</span></a>    <span class="p">)</span>
-</span><span id="train_linear_regression-31"><a href="#train_linear_regression-31"><span class="linenos">31</span></a>
-</span><span id="train_linear_regression-32"><a href="#train_linear_regression-32"><span class="linenos">32</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
-</span><span id="train_linear_regression-33"><a href="#train_linear_regression-33"><span class="linenos">33</span></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
-</span><span id="train_linear_regression-34"><a href="#train_linear_regression-34"><span class="linenos">34</span></a>
-</span><span id="train_linear_regression-35"><a href="#train_linear_regression-35"><span class="linenos">35</span></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
-</span><span id="train_linear_regression-36"><a href="#train_linear_regression-36"><span class="linenos">36</span></a>    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span id="train_linear_regression-37"><a href="#train_linear_regression-37"><span class="linenos">37</span></a>
-</span><span id="train_linear_regression-38"><a href="#train_linear_regression-38"><span class="linenos">38</span></a>    <span class="k">return</span> <span class="n">model</span>
+</span><span id="train_linear_regression-26"><a href="#train_linear_regression-26"><span class="linenos">26</span></a><span class="sd">        Fitted linear regression model.</span>
+</span><span id="train_linear_regression-27"><a href="#train_linear_regression-27"><span class="linenos">27</span></a>
+</span><span id="train_linear_regression-28"><a href="#train_linear_regression-28"><span class="linenos">28</span></a><span class="sd">    Raises</span>
+</span><span id="train_linear_regression-29"><a href="#train_linear_regression-29"><span class="linenos">29</span></a><span class="sd">    ------</span>
+</span><span id="train_linear_regression-30"><a href="#train_linear_regression-30"><span class="linenos">30</span></a><span class="sd">    KeyError</span>
+</span><span id="train_linear_regression-31"><a href="#train_linear_regression-31"><span class="linenos">31</span></a><span class="sd">        If required predictor or target columns are missing.</span>
+</span><span id="train_linear_regression-32"><a href="#train_linear_regression-32"><span class="linenos">32</span></a>
+</span><span id="train_linear_regression-33"><a href="#train_linear_regression-33"><span class="linenos">33</span></a><span class="sd">    ValueError</span>
+</span><span id="train_linear_regression-34"><a href="#train_linear_regression-34"><span class="linenos">34</span></a><span class="sd">        If no valid training observations remain or the</span>
+</span><span id="train_linear_regression-35"><a href="#train_linear_regression-35"><span class="linenos">35</span></a><span class="sd">        training data cannot be fitted.</span>
+</span><span id="train_linear_regression-36"><a href="#train_linear_regression-36"><span class="linenos">36</span></a>
+</span><span id="train_linear_regression-37"><a href="#train_linear_regression-37"><span class="linenos">37</span></a><span class="sd">    Notes</span>
+</span><span id="train_linear_regression-38"><a href="#train_linear_regression-38"><span class="linenos">38</span></a><span class="sd">    -----</span>
+</span><span id="train_linear_regression-39"><a href="#train_linear_regression-39"><span class="linenos">39</span></a><span class="sd">    Rows containing missing predictor or target values are</span>
+</span><span id="train_linear_regression-40"><a href="#train_linear_regression-40"><span class="linenos">40</span></a><span class="sd">    removed before training.</span>
+</span><span id="train_linear_regression-41"><a href="#train_linear_regression-41"><span class="linenos">41</span></a>
+</span><span id="train_linear_regression-42"><a href="#train_linear_regression-42"><span class="linenos">42</span></a><span class="sd">    The function uses ordinary least squares regression.</span>
+</span><span id="train_linear_regression-43"><a href="#train_linear_regression-43"><span class="linenos">43</span></a><span class="sd">    Training and testing data must be separated before</span>
+</span><span id="train_linear_regression-44"><a href="#train_linear_regression-44"><span class="linenos">44</span></a><span class="sd">    calling this function to avoid data leakage.</span>
+</span><span id="train_linear_regression-45"><a href="#train_linear_regression-45"><span class="linenos">45</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="train_linear_regression-46"><a href="#train_linear_regression-46"><span class="linenos">46</span></a>    <span class="n">clean_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
+</span><span id="train_linear_regression-47"><a href="#train_linear_regression-47"><span class="linenos">47</span></a>        <span class="n">subset</span><span class="o">=</span><span class="n">predictors</span> <span class="o">+</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+</span><span id="train_linear_regression-48"><a href="#train_linear_regression-48"><span class="linenos">48</span></a>    <span class="p">)</span>
+</span><span id="train_linear_regression-49"><a href="#train_linear_regression-49"><span class="linenos">49</span></a>
+</span><span id="train_linear_regression-50"><a href="#train_linear_regression-50"><span class="linenos">50</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</span><span id="train_linear_regression-51"><a href="#train_linear_regression-51"><span class="linenos">51</span></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">clean_data</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+</span><span id="train_linear_regression-52"><a href="#train_linear_regression-52"><span class="linenos">52</span></a>
+</span><span id="train_linear_regression-53"><a href="#train_linear_regression-53"><span class="linenos">53</span></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+</span><span id="train_linear_regression-54"><a href="#train_linear_regression-54"><span class="linenos">54</span></a>    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span id="train_linear_regression-55"><a href="#train_linear_regression-55"><span class="linenos">55</span></a>
+</span><span id="train_linear_regression-56"><a href="#train_linear_regression-56"><span class="linenos">56</span></a>    <span class="k">return</span> <span class="n">model</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Train a multiple linear regression model.</p>
+            <div class="docstring"><p>Train a linear regression model using environmental sensor data.</p>
 
 <h2 id="parameters">Parameters</h2>
 
 <p>data : pandas.DataFrame
-    Input data containing predictor and target variables.</p>
+    Training dataset containing predictor and target columns.</p>
 
 <p>predictors : list of str
-    Column names used as predictor variables.</p>
+    Predictor column names, such as 'humidity' and 'pressure'.</p>
 
 <p>target : str
-    Column name of the variable to predict.</p>
+    Target variable to predict, such as 'temperature'.</p>
 
 <h2 id="returns">Returns</h2>
 
 <p>sklearn.linear_model.LinearRegression
-    Trained linear regression model.</p>
+    Fitted linear regression model.</p>
+
+<h2 id="raises">Raises</h2>
+
+<p>KeyError
+    If required predictor or target columns are missing.</p>
+
+<p>ValueError
+    If no valid training observations remain or the
+    training data cannot be fitted.</p>
+
+<h2 id="notes">Notes</h2>
+
+<p>Rows containing missing predictor or target values are
+removed before training.</p>
+
+<p>The function uses ordinary least squares regression.
+Training and testing data must be separated before
+calling this function to avoid data leakage.</p>
 </div>
 
 
@@ -202,49 +279,95 @@
 
     </div>
     <a class="headerlink" href="#predict_with_regression"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="predict_with_regression-41"><a href="#predict_with_regression-41"><span class="linenos">41</span></a><span class="k">def</span> <span class="nf">predict_with_regression</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">):</span>
-</span><span id="predict_with_regression-42"><a href="#predict_with_regression-42"><span class="linenos">42</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="predict_with_regression-43"><a href="#predict_with_regression-43"><span class="linenos">43</span></a><span class="sd">    Predict values using a trained regression model.</span>
-</span><span id="predict_with_regression-44"><a href="#predict_with_regression-44"><span class="linenos">44</span></a>
-</span><span id="predict_with_regression-45"><a href="#predict_with_regression-45"><span class="linenos">45</span></a><span class="sd">    Parameters</span>
-</span><span id="predict_with_regression-46"><a href="#predict_with_regression-46"><span class="linenos">46</span></a><span class="sd">    ----------</span>
-</span><span id="predict_with_regression-47"><a href="#predict_with_regression-47"><span class="linenos">47</span></a><span class="sd">    model : sklearn.linear_model.LinearRegression</span>
-</span><span id="predict_with_regression-48"><a href="#predict_with_regression-48"><span class="linenos">48</span></a><span class="sd">        Previously trained regression model.</span>
-</span><span id="predict_with_regression-49"><a href="#predict_with_regression-49"><span class="linenos">49</span></a>
-</span><span id="predict_with_regression-50"><a href="#predict_with_regression-50"><span class="linenos">50</span></a><span class="sd">    data : pandas.DataFrame</span>
-</span><span id="predict_with_regression-51"><a href="#predict_with_regression-51"><span class="linenos">51</span></a><span class="sd">        Data containing predictor variables.</span>
-</span><span id="predict_with_regression-52"><a href="#predict_with_regression-52"><span class="linenos">52</span></a>
-</span><span id="predict_with_regression-53"><a href="#predict_with_regression-53"><span class="linenos">53</span></a><span class="sd">    predictors : list of str</span>
-</span><span id="predict_with_regression-54"><a href="#predict_with_regression-54"><span class="linenos">54</span></a><span class="sd">        Predictor columns used by the model.</span>
-</span><span id="predict_with_regression-55"><a href="#predict_with_regression-55"><span class="linenos">55</span></a>
-</span><span id="predict_with_regression-56"><a href="#predict_with_regression-56"><span class="linenos">56</span></a><span class="sd">    Returns</span>
-</span><span id="predict_with_regression-57"><a href="#predict_with_regression-57"><span class="linenos">57</span></a><span class="sd">    -------</span>
-</span><span id="predict_with_regression-58"><a href="#predict_with_regression-58"><span class="linenos">58</span></a><span class="sd">    numpy.ndarray</span>
-</span><span id="predict_with_regression-59"><a href="#predict_with_regression-59"><span class="linenos">59</span></a><span class="sd">        Predicted values.</span>
-</span><span id="predict_with_regression-60"><a href="#predict_with_regression-60"><span class="linenos">60</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="predict_with_regression-61"><a href="#predict_with_regression-61"><span class="linenos">61</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
-</span><span id="predict_with_regression-62"><a href="#predict_with_regression-62"><span class="linenos">62</span></a>
-</span><span id="predict_with_regression-63"><a href="#predict_with_regression-63"><span class="linenos">63</span></a>    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="predict_with_regression-59"><a href="#predict_with_regression-59"><span class="linenos"> 59</span></a><span class="k">def</span> <span class="nf">predict_with_regression</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">predictors</span><span class="p">):</span>
+</span><span id="predict_with_regression-60"><a href="#predict_with_regression-60"><span class="linenos"> 60</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="predict_with_regression-61"><a href="#predict_with_regression-61"><span class="linenos"> 61</span></a><span class="sd">    Generate predictions using a fitted linear regression model.</span>
+</span><span id="predict_with_regression-62"><a href="#predict_with_regression-62"><span class="linenos"> 62</span></a>
+</span><span id="predict_with_regression-63"><a href="#predict_with_regression-63"><span class="linenos"> 63</span></a><span class="sd">    Parameters</span>
+</span><span id="predict_with_regression-64"><a href="#predict_with_regression-64"><span class="linenos"> 64</span></a><span class="sd">    ----------</span>
+</span><span id="predict_with_regression-65"><a href="#predict_with_regression-65"><span class="linenos"> 65</span></a><span class="sd">    model : sklearn.linear_model.LinearRegression</span>
+</span><span id="predict_with_regression-66"><a href="#predict_with_regression-66"><span class="linenos"> 66</span></a><span class="sd">        Previously fitted regression model.</span>
+</span><span id="predict_with_regression-67"><a href="#predict_with_regression-67"><span class="linenos"> 67</span></a>
+</span><span id="predict_with_regression-68"><a href="#predict_with_regression-68"><span class="linenos"> 68</span></a><span class="sd">    data : pandas.DataFrame</span>
+</span><span id="predict_with_regression-69"><a href="#predict_with_regression-69"><span class="linenos"> 69</span></a><span class="sd">        Input measurements containing the predictor columns.</span>
+</span><span id="predict_with_regression-70"><a href="#predict_with_regression-70"><span class="linenos"> 70</span></a>
+</span><span id="predict_with_regression-71"><a href="#predict_with_regression-71"><span class="linenos"> 71</span></a><span class="sd">    predictors : list of str</span>
+</span><span id="predict_with_regression-72"><a href="#predict_with_regression-72"><span class="linenos"> 72</span></a><span class="sd">        Predictor column names in the same order as those</span>
+</span><span id="predict_with_regression-73"><a href="#predict_with_regression-73"><span class="linenos"> 73</span></a><span class="sd">        used during model training.</span>
+</span><span id="predict_with_regression-74"><a href="#predict_with_regression-74"><span class="linenos"> 74</span></a>
+</span><span id="predict_with_regression-75"><a href="#predict_with_regression-75"><span class="linenos"> 75</span></a><span class="sd">    Returns</span>
+</span><span id="predict_with_regression-76"><a href="#predict_with_regression-76"><span class="linenos"> 76</span></a><span class="sd">    -------</span>
+</span><span id="predict_with_regression-77"><a href="#predict_with_regression-77"><span class="linenos"> 77</span></a><span class="sd">    numpy.ndarray</span>
+</span><span id="predict_with_regression-78"><a href="#predict_with_regression-78"><span class="linenos"> 78</span></a><span class="sd">        Predicted values, with one prediction per input row.</span>
+</span><span id="predict_with_regression-79"><a href="#predict_with_regression-79"><span class="linenos"> 79</span></a>
+</span><span id="predict_with_regression-80"><a href="#predict_with_regression-80"><span class="linenos"> 80</span></a><span class="sd">    Raises</span>
+</span><span id="predict_with_regression-81"><a href="#predict_with_regression-81"><span class="linenos"> 81</span></a><span class="sd">    ------</span>
+</span><span id="predict_with_regression-82"><a href="#predict_with_regression-82"><span class="linenos"> 82</span></a><span class="sd">    KeyError</span>
+</span><span id="predict_with_regression-83"><a href="#predict_with_regression-83"><span class="linenos"> 83</span></a><span class="sd">        If required predictor columns are missing.</span>
+</span><span id="predict_with_regression-84"><a href="#predict_with_regression-84"><span class="linenos"> 84</span></a>
+</span><span id="predict_with_regression-85"><a href="#predict_with_regression-85"><span class="linenos"> 85</span></a><span class="sd">    ValueError</span>
+</span><span id="predict_with_regression-86"><a href="#predict_with_regression-86"><span class="linenos"> 86</span></a><span class="sd">        If predictor values are invalid or incompatible</span>
+</span><span id="predict_with_regression-87"><a href="#predict_with_regression-87"><span class="linenos"> 87</span></a><span class="sd">        with the fitted regression model.</span>
+</span><span id="predict_with_regression-88"><a href="#predict_with_regression-88"><span class="linenos"> 88</span></a>
+</span><span id="predict_with_regression-89"><a href="#predict_with_regression-89"><span class="linenos"> 89</span></a><span class="sd">    sklearn.exceptions.NotFittedError</span>
+</span><span id="predict_with_regression-90"><a href="#predict_with_regression-90"><span class="linenos"> 90</span></a><span class="sd">        If the regression model has not been fitted.</span>
+</span><span id="predict_with_regression-91"><a href="#predict_with_regression-91"><span class="linenos"> 91</span></a>
+</span><span id="predict_with_regression-92"><a href="#predict_with_regression-92"><span class="linenos"> 92</span></a><span class="sd">    Notes</span>
+</span><span id="predict_with_regression-93"><a href="#predict_with_regression-93"><span class="linenos"> 93</span></a><span class="sd">    -----</span>
+</span><span id="predict_with_regression-94"><a href="#predict_with_regression-94"><span class="linenos"> 94</span></a><span class="sd">    The model must be trained before making predictions.</span>
+</span><span id="predict_with_regression-95"><a href="#predict_with_regression-95"><span class="linenos"> 95</span></a>
+</span><span id="predict_with_regression-96"><a href="#predict_with_regression-96"><span class="linenos"> 96</span></a><span class="sd">    This function does not automatically remove missing</span>
+</span><span id="predict_with_regression-97"><a href="#predict_with_regression-97"><span class="linenos"> 97</span></a><span class="sd">    predictor values. Valid numerical inputs are required.</span>
+</span><span id="predict_with_regression-98"><a href="#predict_with_regression-98"><span class="linenos"> 98</span></a>
+</span><span id="predict_with_regression-99"><a href="#predict_with_regression-99"><span class="linenos"> 99</span></a><span class="sd">    For this project, the regression models are used to</span>
+</span><span id="predict_with_regression-100"><a href="#predict_with_regression-100"><span class="linenos">100</span></a><span class="sd">    predict temperature in degrees Celsius.</span>
+</span><span id="predict_with_regression-101"><a href="#predict_with_regression-101"><span class="linenos">101</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="predict_with_regression-102"><a href="#predict_with_regression-102"><span class="linenos">102</span></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">predictors</span><span class="p">]</span>
+</span><span id="predict_with_regression-103"><a href="#predict_with_regression-103"><span class="linenos">103</span></a>
+</span><span id="predict_with_regression-104"><a href="#predict_with_regression-104"><span class="linenos">104</span></a>    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Predict values using a trained regression model.</p>
+            <div class="docstring"><p>Generate predictions using a fitted linear regression model.</p>
 
 <h2 id="parameters">Parameters</h2>
 
 <p>model : sklearn.linear_model.LinearRegression
-    Previously trained regression model.</p>
+    Previously fitted regression model.</p>
 
 <p>data : pandas.DataFrame
-    Data containing predictor variables.</p>
+    Input measurements containing the predictor columns.</p>
 
 <p>predictors : list of str
-    Predictor columns used by the model.</p>
+    Predictor column names in the same order as those
+    used during model training.</p>
 
 <h2 id="returns">Returns</h2>
 
 <p>numpy.ndarray
-    Predicted values.</p>
+    Predicted values, with one prediction per input row.</p>
+
+<h2 id="raises">Raises</h2>
+
+<p>KeyError
+    If required predictor columns are missing.</p>
+
+<p>ValueError
+    If predictor values are invalid or incompatible
+    with the fitted regression model.</p>
+
+<p>sklearn.exceptions.NotFittedError
+    If the regression model has not been fitted.</p>
+
+<h2 id="notes">Notes</h2>
+
+<p>The model must be trained before making predictions.</p>
+
+<p>This function does not automatically remove missing
+predictor values. Valid numerical inputs are required.</p>
+
+<p>For this project, the regression models are used to
+predict temperature in degrees Celsius.</p>
 </div>
 
 

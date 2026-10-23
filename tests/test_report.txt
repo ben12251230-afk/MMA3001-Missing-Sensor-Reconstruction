@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+collecting ... collected 8 items
+
+tests/test_evaluation.py::test_calculate_errors_perfect_prediction PASSED [ 12%]
+tests/test_evaluation.py::test_calculate_errors_known_values PASSED      [ 25%]
+tests/test_interpolation.py::test_create_missing_gap PASSED              [ 37%]
+tests/test_interpolation.py::test_linear_interpolation PASSED            [ 50%]
+tests/test_interpolation.py::test_cubic_spline_interpolation PASSED      [ 62%]
+tests/test_validation.py::test_create_missing_windows PASSED             [ 75%]
+tests/test_validation.py::test_validate_reconstruction PASSED            [ 87%]
+tests/test_validation.py::test_endpoint_constraints PASSED               [100%]
+
+============================== 8 passed in 2.65s ===============================
