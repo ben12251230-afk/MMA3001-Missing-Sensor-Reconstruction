@@ -6,6 +6,10 @@
 
 Indoor temperature measurements are used to assess building environmental conditions and support HVAC-related analysis. Sensor faults, communication interruptions, or missing transmissions can leave gaps in these measurements. This project investigates how accurately missing **historical** indoor temperatures can be reconstructed using numerical interpolation and regression-based methods.
 
+## Final Report
+
+[View the final project report](report/MMA3001_Final_Report.pdf)
+
 **Research question:** *How accurately can different numerical and data-driven methods reconstruct missing indoor temperature measurements, and how does performance change with missing-data duration?*
 
 The project follows three stages:
@@ -169,9 +173,9 @@ Four representative methods were benchmarked using the same **60 missing windows
 | Method | Median runtime for 60 windows (ms) | Approx. per window (ms) |
 |---|---:|---:|
 | **Linear interpolation** | **0.0659** | 0.0011 |
-| Cubic spline | 5.3577 | 0.0893 |
-| Combined regression | 18.7317 | 0.3122 |
-| Endpoint-constrained regression | 53.4988 | 0.8916 |
+| Cubic spline | 5.2052 | 0.0868 |
+| Combined regression | 18.7317 | 0.2984 |
+| Endpoint-constrained regression | 63.7809 | 1.0630 |
 
 These values measure **reconstruction computation only**, excluding raw data loading, preprocessing, model training, and plotting. They depend on hardware and the Python implementation. Although the constrained method achieved marginally lower errors at some durations, **linear interpolation offered a favourable accuracy–runtime trade-off** for this dataset.
 
@@ -252,14 +256,26 @@ mkdir -p Data/raw
 
 ### 4. Run the Jupyter Notebook
 
-The notebook's original data-loading cell uses the relative path `../Data/raw/...`, so **run the notebook with its working directory set to `notebooks/`**:
+
+### 4. Run the Jupyter Notebook
+
+The notebook determines the project root automatically when launched from the repository root or the `notebooks/` directory. Place the raw CSV in `Data/raw/` before running the analysis.
+
+Launch Jupyter Notebook from the repository root:
+
+```bash
+jupyter notebook notebooks/01_data_exploration.ipynb
+```
+
+Alternatively, run it from the `notebooks/` directory:
 
 ```bash
 cd notebooks
 jupyter notebook 01_data_exploration.ipynb
 ```
 
-In VS Code, check that the notebook kernel's working directory is `notebooks/`; otherwise adjust the first CSV path before execution. The notebook contains the exploratory experiments, chronological split, model fitting, six- and seven-method validation, plots, benchmark, and export cells.
+The notebook includes data exploration, preprocessing, interpolation, regression model fitting, six- and seven-method validation, figures, runtime benchmarking, and result exports.
+
 
 ### 5. Review generated results
 
