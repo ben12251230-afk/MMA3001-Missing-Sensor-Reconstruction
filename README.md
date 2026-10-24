@@ -315,15 +315,14 @@ Future work could study longer interruptions, additional sensors, independent va
 
 ## AI Use and Critical Reflection
 
-AI tools, primarily **ChatGPT**, assisted with research planning, coding, debugging, numerical explanations, validation design, and documentation.
+The research direction and engineering questions were chosen by the author. I selected missing indoor temperature reconstruction as the project topic and decided to investigate and compare numerical interpolation and regression methods. After defining the research goals, I asked ChatGPT to generate Python code to implement the planned workflow.
 
-- **Research development:** Explored problem scope and revised the original occupancy-prediction direction to missing temperature reconstruction in response to dataset suitability and tutor feedback.
-- **Implementation:** Supported data cleaning, interpolation, linear regression, error calculations, and test development.
-- **Method improvement:** Helped formulate and implement an endpoint-constrained correction after poor original regression results were investigated.
-- **Verification:** Suggestions were checked against sensor data, recorded outputs, mathematical assumptions, and automated tests. In particular, the endpoint correction was distinguished from an incorrect claim that it reduced the fitted model's degrees of freedom.
-- **Independent responsibility:** Interpretation of experimental results, recognition of limitations, and final submitted work remain the author's responsibility.
+- Code generation and implementation: ChatGPT drafted code for data cleaning, interpolation, regression models, error metrics, and validation experiments based on my requests.
+- Debugging and refinement: I used ChatGPT to identify errors, adjust code, improve the notebook structure, and prepare plots, tests, and documentation.
+- Method development: After reviewing the initial six-method results, I investigated the poor regression performance and used ChatGPT to help implement and explain an endpoint-constrained correction for further comparison.
+- Verification and responsibility: I ran the code, inspected results against the sensor data, compared reconstruction methods, and checked key calculations with automated tests. I also corrected misleading explanations, including the suggestion that endpoint constraints reduced the regression model’s degrees of freedom.
 
-AI was a substantial programming and explanation aid, but its suggestions were reviewed rather than accepted as automatically correct. The project demonstrated the need to verify AI-assisted numerical work with actual data, tests, and engineering judgment.
+AI made implementation and technical learning more efficient, but the research direction, assessment of results, and final engineering judgments were my responsibility. AI-generated code and explanations were reviewed rather than treated as automatically correct.
 
 ## Reference Documentation
 
